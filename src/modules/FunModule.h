@@ -35,6 +35,7 @@ private:
 		QString pollName;
 		int pollNum;
 		std::shared_ptr<QTimer> timer;
+		std::shared_ptr<QTimer> remainingTimeTimer;
 		ServerPolls polls;
 
 		PollSettings(const PollOptions& op, long long maxvotes, snowflake_t chan, const QString& name, int num, double time, const ServerPolls& pollList, snowflake_t msg);

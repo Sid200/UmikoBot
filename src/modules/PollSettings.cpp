@@ -1,6 +1,7 @@
 #include "FunModule.h"
 
 #define EMBED_BAR_MAX_WIDTH 15.0
+#define REMAINING_TIME_TIMER_INTERVAL 5 //in seconds
 
 using namespace Discord;
 
@@ -138,5 +139,27 @@ FunModule::PollSettings::PollSettings(const PollOptions& op, long long maxvotes,
 				
 			});
 		});
+	});
+
+	remainingTimeTimer = std::make_shared<QTimer>();
+	remainingTimeTimer->setInterval(REMAINING_TIME_TIMER_INTERVAL * 1000);
+	remainingTimeTimer->start();
+
+	QObject::connect(remainingTimeTimer.get(), &QTimer::timeout, [this]()
+	{
+		UmikoBot::Instance().getChannelMessage(notifChannel, pollMsg)
+		.then([this](const Discord::Message& message) 
+		{
+			const auto& oldEmbed = message.embeds().at(0);
+			MessagePatch patch;
+			Embed newEmbed;
+			newEmbed = oldEmbed;
+			EmbedFooter footer;
+			footer.setText("Remaining Time: " + utility::StringifyMilliseconds(timer->remainingTime(), utility::StringMSFormat::MINIMAL));
+			newEmbed.setFooter(footer);
+			patch.setEmbed(newEmbed);
+			UmikoBot::Instance().editMessage(message.channelId(), message.id(), patch);
+		});
+
 	});
 }

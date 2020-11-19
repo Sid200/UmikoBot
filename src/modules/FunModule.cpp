@@ -466,6 +466,10 @@ FunModule::FunModule(UmikoBot* client) : Module("funutil", true), m_memeChannel(
 					embed.setTitle("Poll#" + QString::number(pollNum) + " " + pollName);
 					embed.setDescription(desc);
 
+					Discord::EmbedFooter footer;
+					footer.setText("Remaining Time: " + utility::StringifyMilliseconds(pollTime*1000, utility::StringMSFormat::MINIMAL));
+					embed.setFooter(footer);
+
 					snowflake_t guild = channel.guildId();
 
 					UmikoBot::Instance()
